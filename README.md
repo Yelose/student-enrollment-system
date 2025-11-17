@@ -1,59 +1,81 @@
-# StudentEnrollmentSystem
+# Student Enrollment System
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.10.
+A modern internal web application built with **Angular 20** and **Firebase**, designed to manage students, courses, and enrollments within an educational environment.
 
-## Development server
+This system centralizes the full workflow of capturing and organizing student information, assigning them to courses, and managing enrollment states (pending, accepted, rejected).
 
-To start a local development server, run:
+Fully modular, scalable, and ready for future extensions such as analytics, roles, and administrative dashboards.
 
-```bash
-ng serve
+---
+
+## 🚀 Features
+
+### 👤 Student Management
+- Create, edit, delete students  
+- Detailed student profiles  
+- List with search and filters  
+- Fields include: name, surname, email, phone, DNI, address, city, province, employment status, interests list
+
+### 📚 Course Management
+- Create and manage courses  
+- Course detail view  
+- Course metadata: name, code, interests, start date, end date  
+
+### 📝 Enrollment Management
+- Link students with courses  
+- Manage enrollment status (Pending, Accepted, Rejected)  
+- Filter enrollment list by student or course  
+
+### 🔐 Authentication & Security
+- Firebase Authentication  
+- Firestore rules for read/write protection  
+- Optional role-based access in future iterations  
+
+---
+
+## 🧱 Tech Stack
+
+- **Angular 20** (standalone components + modern architecture)
+- **Firebase**  
+  - Authentication  
+  - Firestore  
+  - Hosting  
+- **AngularFire v17+**  
+- **TypeScript strict**  
+- **Material Design (optional)**
+
+---
+
+## 📂 Project Structure
+
+```plaintext
+src/
+  app/
+    core/
+      models/
+        student-model.ts
+        course-model.ts
+        enrollment-model.ts
+      services/
+        student.service.ts
+        course.service.ts
+        enrollment.service.ts
+    features/
+      students/
+      courses/
+      enrollments/
+      auth/
+        login/
+      home/
+    shared/
+      components/
+      utils/
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+---
 
-## Code scaffolding
+## 📄 License
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+This project is licensed under the MIT License.  
 
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
