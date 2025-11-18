@@ -1,21 +1,205 @@
-
 // Include theming for Angular Material with `mat.theme()`.
 // This Sass mixin will define CSS variables that are used for styling Angular Material
 // components according to the Material 3 design spec.
 // Learn more about theming and how to use it for your application's
 // custom components at https://material.angular.dev/guide/theming
+
+// https://themes.angular-material.dev/?bold-font-weight=700&brand-font-family=Poppins&medium-font-weight=500&plain-font-family=Roboto&regular-font-weight=400&seed-error=%23ba1a1a&seed-neutral=%23737878&seed-neutral-variant=%236d797a&seed-primary=%2300989e&seed-secondary=%233e6567&seed-tertiary=%23744e93
 @use '@angular/material' as mat;
+
+:root,
+:host {
+  @include mat.theme-overrides((primary: #00696d,
+      /* Anulación de Border Radius para hacerlo menos redondeado */
+      corner-none: 0,
+      corner-extra-small: 2px,
+      corner-small: 2px,
+      corner-medium: 4px,
+      corner-large: 7px,
+      corner-extra-large: 12px,
+      corner-full: 9999px,
+      on-primary: #ffffff,
+      primary-container: #84f4fa,
+      on-primary-container: #002021,
+      inverse-primary: #66d7dd,
+      primary-fixed: #84f4fa,
+      primary-fixed-dim: #66d7dd,
+      on-primary-fixed: #002021,
+      on-primary-fixed-variant: #004f53,
+      secondary: #3e6567,
+      on-secondary: #ffffff,
+      secondary-container: #c1eaec,
+      on-secondary-container: #002021,
+      secondary-fixed: #c1eaec,
+      secondary-fixed-dim: #a5ced0,
+      on-secondary-fixed: #002021,
+      on-secondary-fixed-variant: #254d4f,
+      tertiary: #744e93,
+      on-tertiary: #ffffff,
+      tertiary-container: #f2daff,
+      on-tertiary-container: #2c044b,
+      tertiary-fixed: #f2daff,
+      tertiary-fixed-dim: #e0b6ff,
+      on-tertiary-fixed: #2c044b,
+      on-tertiary-fixed-variant: #5b3679,
+      background: #fcf9f8,
+      on-background: #1c1b1b,
+      surface: #fcf9f8,
+      surface-dim: #dcd9d9,
+      surface-bright: #fcf9f8,
+      surface-container-lowest: #ffffff,
+      surface-container-low: #f6f3f2,
+      surface-container: #f0edec,
+      surface-container-high: #ebe7e7,
+      surface-container-highest: #e5e2e1,
+      on-surface: #1c1b1b,
+      shadow: #000000,
+      scrim: #000000,
+      surface-tint: #5a5f5f,
+      inverse-surface: #313030,
+      inverse-on-surface: #f3f0ef,
+      outline: #747878,
+      outline-variant: #c3c7c7,
+      neutral: #787776,
+      neutral10: #1c1b1b,
+      error: #ba1a1a,
+      error-container: #ffdad6,
+      on-error: #ffffff,
+      on-error-container: #410002,
+      surface-variant: #dfe3e3,
+      on-surface-variant: #434848,
+      neutral-variant: #737878,
+      neutral-variant20: #2c3132,
+      inverse-secondary: #a5ced0,
+      inverse-tertiary: #e0b6ff,
+    ));
+}
+
+/* Dark Theme */
+.dark {
+  @include mat.theme-overrides((primary: #66d7dd,
+      corner-none: 0,
+      corner-extra-small: 2px,
+      corner-small: 2px,
+      corner-medium: 4px,
+      corner-large: 7px,
+      corner-extra-large: 12px,
+      corner-full: 9999px,
+      on-primary: #003739,
+      primary-container: #004f53,
+      on-primary-container: #84f4fa,
+      inverse-primary: #00696d,
+      primary-fixed: #84f4fa,
+      primary-fixed-dim: #66d7dd,
+      on-primary-fixed: #002021,
+      on-primary-fixed-variant: #004f53,
+      secondary: #a5ced0,
+      on-secondary: #0a3638,
+      secondary-container: #254d4f,
+      on-secondary-container: #c1eaec,
+      secondary-fixed: #c1eaec,
+      secondary-fixed-dim: #a5ced0,
+      on-secondary-fixed: #002021,
+      on-secondary-fixed-variant: #254d4f,
+      tertiary: #e0b6ff,
+      on-tertiary: #431e61,
+      tertiary-container: #5b3679,
+      on-tertiary-container: #f2daff,
+      tertiary-fixed: #f2daff,
+      tertiary-fixed-dim: #e0b6ff,
+      on-tertiary-fixed: #2c044b,
+      on-tertiary-fixed-variant: #5b3679,
+      background: #131313,
+      on-background: #e5e2e1,
+      surface: #131313,
+      surface-dim: #131313,
+      surface-bright: #3a3939,
+      surface-container-lowest: #0e0e0e,
+      surface-container-low: #1c1b1b,
+      surface-container: #201f1f,
+      surface-container-high: #2a2a2a,
+      surface-container-highest: #353534,
+      on-surface: #e5e2e1,
+      shadow: #000000,
+      scrim: #000000,
+      surface-tint: #c3c7c7,
+      inverse-surface: #e5e2e1,
+      inverse-on-surface: #313030,
+      outline: #8d9191,
+      outline-variant: #434848,
+      neutral: #787776,
+      neutral10: #1c1b1b,
+      error: #ffb4ab,
+      error-container: #93000a,
+      on-error: #690005,
+      on-error-container: #ffdad6,
+      surface-variant: #434848,
+      on-surface-variant: #c3c7c7,
+      neutral-variant: #737878,
+      neutral-variant20: #2c3132,
+      inverse-secondary: #3e6567,
+      inverse-tertiary: #744e93,
+    ));
+}
+
+/* Typography */
+:root,
+:host {
+  /* core typography tokens are not generating css variables, hence below */
+  --mat-sys-brand-font-family: Poppins;
+  --mat-sys-plain-font-family: Roboto;
+  --mat-sys-bold-font-weight: 700;
+  --mat-sys-medium-font-weight: 500;
+  --mat-sys-regular-font-weight: 400;
+
+  @include mat.theme-overrides((brand-family: Poppins,
+      plain-family: Roboto,
+      bold-weight: 700,
+      medium-weight: 500,
+      regular-weight: 400,
+      body-large-weight: var(--mat-sys-regular-font-weight),
+      body-medium-weight: var(--mat-sys-regular-font-weight),
+      body-small-weight: var(--mat-sys-regular-font-weight),
+      display-large-weight: var(--mat-sys-regular-font-weight),
+      display-medium-weight: var(--mat-sys-regular-font-weight),
+      display-small-weight: var(--mat-sys-regular-font-weight),
+      headline-large-weight: var(--mat-sys-regular-font-weight),
+      headline-medium-weight: var(--mat-sys-regular-font-weight),
+      headline-small-weight: var(--mat-sys-regular-font-weight),
+      title-large-weight: var(--mat-sys-regular-font-weight),
+      body-large: var(--mat-sys-body-large-weight) var(--mat-sys-body-large-size) / var(--mat-sys-body-large-line-height) var(--mat-sys-body-large-font),
+      body-medium: var(--mat-sys-body-medium-weight) var(--mat-sys-body-medium-size) / var(--mat-sys-body-medium-line-height) var(--mat-sys-body-medium-font),
+      body-small: var(--mat-sys-body-small-weight) var(--mat-sys-body-small-size) / var(--mat-sys-body-small-line-height) var(--mat-sys-body-small-font),
+      label-large: var(--mat-sys-label-large-weight) var(--mat-sys-label-large-size) / var(--mat-sys-label-large-line-height) var(--mat-sys-label-large-font),
+      label-medium: var(--mat-sys-label-medium-weight) var(--mat-sys-label-medium-size) / var(--mat-sys-label-medium-line-height) var(--mat-sys-label-medium-font),
+      label-small: var(--mat-sys-label-small-weight) var(--mat-sys-label-small-size) / var(--mat-sys-label-small-line-height) var(--mat-sys-label-small-font),
+      title-large: var(--mat-sys-title-large-weight) var(--mat-sys-title-large-size) / var(--mat-sys-title-large-line-height) var(--mat-sys-title-large-font),
+      title-medium: var(--mat-sys-title-medium-weight) var(--mat-sys-title-medium-size) / var(--mat-sys-title-medium-line-height) var(--mat-sys-title-medium-font),
+      title-small: var(--mat-sys-title-small-weight) var(--mat-sys-title-small-size) / var(--mat-sys-title-small-line-height) var(--mat-sys-title-small-font),
+      headline-large: var(--mat-sys-headline-large-weight) var(--mat-sys-headline-large-size) / var(--mat-sys-headline-large-line-height) var(--mat-sys-headline-large-font),
+      headline-medium: var(--mat-sys-headline-medium-weight) var(--mat-sys-headline-medium-size) / var(--mat-sys-headline-medium-line-height) var(--mat-sys-headline-medium-font),
+      headline-small: var(--mat-sys-headline-small-weight) var(--mat-sys-headline-small-size) / var(--mat-sys-headline-small-line-height) var(--mat-sys-headline-small-font),
+      display-large: var(--mat-sys-display-large-weight) var(--mat-sys-display-large-size) / var(--mat-sys-display-large-line-height) var(--mat-sys-display-large-font),
+      display-medium: var(--mat-sys-display-medium-weight) var(--mat-sys-display-medium-size) / var(--mat-sys-display-medium-line-height) var(--mat-sys-display-medium-font),
+      display-small: var(--mat-sys-display-small-weight) var(--mat-sys-display-small-size) / var(--mat-sys-display-small-line-height) var(--mat-sys-display-small-font),
+      headline-large-font: var(--mat-sys-brand-font-family),
+      headline-medium-font: var(--mat-sys-brand-font-family),
+      headline-small-font: var(--mat-sys-brand-font-family),
+      display-large-font: var(--mat-sys-brand-font-family),
+      display-medium-font: var(--mat-sys-brand-font-family),
+      display-small-font: var(--mat-sys-brand-font-family),
+      title-large-font: var(--mat-sys-brand-font-family),
+      label-large-weight-prominent: var(--mat-sys-bold-font-weight),
+      label-medium-weight-prominent: var(--mat-sys-bold-font-weight),
+    ));
+}
 
 html {
   @include mat.theme((
-    color: (
-      primary: mat.$cyan-palette,
-      tertiary: mat.$orange-palette,
-    ),
-    typography: Roboto,
     density: 0,
   ));
 }
+
 
 body {
   // Default the application to a light color theme. This can be changed to
@@ -33,7 +217,21 @@ body {
   // Reset the user agent margin.
   margin: 0;
 }
+
 /* You can add global styles to this file, and also import other style files */
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+mat-toolbar {
+  @include mat.toolbar-overrides((container-background-color: var(--mat-sys-primary-container),
+      container-text-color: var(--mat-sys-on-primary-container),
+    ));
+}
