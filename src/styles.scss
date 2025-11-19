@@ -245,5 +245,10 @@ button[mat-button] {
     outlined-container-shape: var(--mat-sys-corner-large),
     text-container-shape: var(--mat-sys-corner-large),
     protected-container-shape: var(--mat-sys-corner-large),
-  ));
+    protected-container-elevation-shadow: var(--mat-sys-level2),
+    protected-hover-container-elevation-shadow: var(--mat-sys-level3),
+    protected-focus-container-elevation-shadow: var(--mat-sys-level3),
+    protected-pressed-container-elevation-shadow: var(--mat-sys-level1),
+   ));
 }
+
