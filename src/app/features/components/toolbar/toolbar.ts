@@ -5,10 +5,11 @@ import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth';
 import { SnackBarService } from '../../../shared/services/snack-bar-service';
 import { LoaderService } from '../../../shared/services/loader-service';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-toolbar',
-  imports: [ MatToolbarModule, RouterLink, MatButtonModule ],
+  imports: [ MatToolbarModule, MatButtonModule, MatIconModule,  RouterLink, MatButtonModule ],
   templateUrl: './toolbar.html',
   styleUrl: './toolbar.scss',
 })

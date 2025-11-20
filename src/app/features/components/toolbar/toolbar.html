@@ -1,10 +1,28 @@
 <mat-toolbar>
-    <span>Title</span> 
-    <span routerLink="">Inicio</span> 
-    <span routerLink="courses">Cursos</span> 
-    <span routerLink="students">Alumnos</span> 
-    <span routerLink="enrollments">Matrículas</span> 
+    <span>Title</span>
+    <nav>
+        <button matButton="elevated" routerLink="" [disabled]="!loggedIn()">
+            <mat-icon>home</mat-icon>
+            <span >Inicio</span>
+        </button>
+        <button matButton="filled" routerLink="courses" [disabled]="!loggedIn()">
+            <mat-icon>list</mat-icon>
+            <span >Cursos</span>
+        </button>    
+        <button matButton="filled" routerLink="students" [disabled]="!loggedIn()">
+            <mat-icon>face</mat-icon>
+            <span >Alumnos</span>
+        </button>    
+        <button matButton="filled" routerLink="enrollments" [disabled]="!loggedIn()">
+            <mat-icon>book</mat-icon>
+            <span >Matrículas</span>
+        </button>    
+    </nav>
+
     @if (loggedIn()){
-        <button matButton="filled" (click)="logout()">Log Out</button>
+    <button matButton="tonal" (click)="logout()">
+        <span>Cerrar Sesión</span>
+        <mat-icon>logout</mat-icon>
+    </button>
     }
 </mat-toolbar>
