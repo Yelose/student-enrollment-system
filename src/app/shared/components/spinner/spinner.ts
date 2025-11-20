@@ -9,7 +9,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
   :host {
     height: 100dvh;
     width: 100dvw;
-    margin: 0 auto;
+    margin: auto;
   }
   `,
 })

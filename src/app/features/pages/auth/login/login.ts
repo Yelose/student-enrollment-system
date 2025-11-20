@@ -7,7 +7,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import {MatCardModule} from '@angular/material/card';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -19,6 +19,7 @@ export class Login {
    private fb = inject(NonNullableFormBuilder)
    private authService = inject(AuthService)
    private router = inject(Router)
+   private route =  inject(ActivatedRoute)
    private snackbar = inject(SnackBarService)
 
    loginForm = this.fb.group({
@@ -39,19 +40,22 @@ export class Login {
     
     if (!this.loginForm.valid || !email || !password){
       this.snackbar.show("Formulario incorrecto", "error")
+      return
     }
 
-    if (this.loginForm.valid && email && password) {
-      this.authService.login(email as string, password as string).subscribe({
-        next: () => {
-          this.snackbar.show("Se ha iniciado sesión correctamente", "success");
-          const redirect = this.router.parseUrl(this.router.url).queryParams?.['redirect'];
-          this.router.navigateByUrl(redirect || '/offers');
-        },
-        error: () => {
-          this.snackbar.show("Usuario o contraseña incorrectos", "error");
-        }
-      });
-    }
+    this.authService.login(email, password).subscribe({
+      next: () => {
+        this.snackbar.show('Se ha iniciado sesión correctamente', 'success');
+
+        // leer redirect de los query params del login
+        const redirect = this.route.snapshot.queryParamMap.get('redirect');
+
+        // si no hay redirect -> ir a home raíz
+        this.router.navigateByUrl(redirect || '/');
+      },
+      error: () => {
+        this.snackbar.show('Usuario o contraseña incorrectos', 'error');
+      },
+    });    
    }
 }
