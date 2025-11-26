@@ -51,6 +51,13 @@ export const routes: Routes = [
         .then((m) => m.StudentDetail),
     canActivate: [authGuard],
   },
+  {
+    path: "students-form",
+    loadComponent: () =>
+      import("./features/pages/students/students-form/students-form")
+        .then(m => m.StudentsForm),
+    canActivate: [authGuard]
+  },
 
   // ------- PUBLIC ROUTES -------
   {

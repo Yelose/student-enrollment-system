@@ -1,30 +1,36 @@
 import { Injectable, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { Auth, authState, signInWithEmailAndPassword, User } from '@angular/fire/auth';
+import {
+  Auth,
+  authState,
+  signInWithEmailAndPassword,
+  User,
+} from '@angular/fire/auth';
 import { from } from 'rxjs';
-import { LoaderService } from '../../shared/services/loader-service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private auth = inject(Auth)
-  private userSignal = toSignal<User | null> (authState(this.auth), {initialValue: null})
-  private loader = inject(LoaderService)
+  private auth = inject(Auth);
 
-  readonly currentUser = computed(() => this.userSignal())
-  readonly isLoggedIn = computed(() => !!this.userSignal())
+  private userSignal = toSignal<User | null>(authState(this.auth), {
+    initialValue: null,
+  });
 
-  get user(): User | null{
-    return this.userSignal()
+  readonly currentUser = computed(() => this.userSignal());
+  readonly isLoggedIn = computed(() => !!this.userSignal());
+
+  get user(): User | null {
+    return this.userSignal();
   }
 
   login(email: string, password: string) {
-    return this.loader.wrap(from(signInWithEmailAndPassword(this.auth, email, password)));
+    // devolvemos directamente el observable, sin loader
+    return from(signInWithEmailAndPassword(this.auth, email, password));
   }
 
   logout() {
-    return this.loader.wrap(from(this.auth.signOut()));
+    return from(this.auth.signOut());
   }
-
 }

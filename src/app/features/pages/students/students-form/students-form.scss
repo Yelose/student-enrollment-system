@@ -1,0 +1,38 @@
+main {
+    width: 100dvw;
+    display: flex;
+    justify-content: center;
+    padding: 5dvh 0;
+    form{
+    display: flex;
+    flex-direction: column;
+    width: min(80%, 1000px);
+    border-radius: 7px;
+    box-shadow: 1px 1px 13px 1px rgba(129, 129, 129, 0.517);
+    padding: 5%;
+    gap: 2dvh;
+    section {
+        display: flex;
+        flex-direction: column;
+        div{
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            mat-form-field{
+                min-width: min(250px, 50%);
+                flex: 1;
+            }
+        }
+        article{
+            div{
+                display: flex;
+                flex-wrap: wrap;
+
+            }
+        }
+        button {
+            align-self: center;
+            width: fit-content;
+        }
+    }
+}}

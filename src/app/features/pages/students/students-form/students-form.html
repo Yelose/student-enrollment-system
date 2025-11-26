@@ -1,0 +1,118 @@
+<main>
+
+  <form [formGroup]="studentForm" (ngSubmit)="submit()">
+    <section>
+      <h2>Datos del alumno</h2>
+      <div>
+        <mat-form-field appearance="outline">
+          <mat-label>Nombre</mat-label>
+          <input matInput formControlName="firstName" />
+          @if (firstName?.invalid && (firstName?.dirty || firstName?.touched)) {
+            <mat-error>
+              El nombre es obligatorio y debe tener al menos 2 caracteres.
+            </mat-error>
+          }
+        </mat-form-field>
+        
+        <mat-form-field appearance="outline">
+          <mat-label>Apellidos</mat-label>
+          <input matInput formControlName="lastName" />
+          @if (lastName?.invalid && (lastName?.dirty || lastName?.touched)) {
+            <mat-error>
+              Los apellidos son obligatorios y deben tener al menos 2 caracteres.
+            </mat-error>
+          }
+        </mat-form-field>
+        
+        <mat-form-field appearance="outline">
+          <mat-label>Email</mat-label>
+          <input matInput type="email" formControlName="email" />
+          @if (email?.invalid && (email?.dirty || email?.touched)) {
+            <mat-error>Introduce un email válido.</mat-error>
+          }
+        </mat-form-field>
+        
+        <mat-form-field appearance="outline">
+          <mat-label>Teléfono</mat-label>
+          <input matInput type="tel" formControlName="phone" />
+          @if (phone?.invalid && (phone?.dirty || phone?.touched)) {
+            <mat-error>
+              El teléfono es obligatorio (mínimo 9 dígitos).
+            </mat-error>
+          }
+        </mat-form-field>
+        
+        <mat-form-field appearance="outline">
+          <mat-label>DNI</mat-label>
+          <input matInput formControlName="nationalId" />
+          @if (nationalId?.invalid && (nationalId?.dirty || nationalId?.touched)) {
+            <mat-error>El DNI es obligatorio.</mat-error>
+          }
+        </mat-form-field>
+      </div>
+    </section>
+    
+    <section>
+      <h2>Dirección</h2>
+      <div>
+        <mat-form-field appearance="outline">
+          <mat-label>Dirección</mat-label>
+          <input matInput formControlName="address" />
+        </mat-form-field>
+        
+        <mat-form-field appearance="outline">
+          <mat-label>Ciudad</mat-label>
+          <input matInput formControlName="city" />
+        </mat-form-field>
+        
+        <mat-form-field appearance="outline">
+          <mat-label>Provincia</mat-label>
+          <input matInput formControlName="province" />
+        </mat-form-field>
+      </div>
+    </section>
+    
+    <section>
+      <h2>Situación y preferencias</h2>
+      <div>
+        
+        <!-- Employment status: select obligatorio -->
+        <mat-form-field appearance="outline">
+          <mat-label>Estado laboral</mat-label>
+          <mat-select formControlName="employmentStatus">
+            @for (status of employmentStatusOptions; track status.value) {
+              <mat-option [value]="status.value">
+                {{ status.label }}
+              </mat-option>
+            }
+          </mat-select>
+          
+          @if (employmentStatus?.invalid && (employmentStatus?.dirty || employmentStatus?.touched)) {
+            <mat-error>El estado laboral es obligatorio.</mat-error>
+          }
+        </mat-form-field>
+      </div>
+      
+      <!-- Interests: checkboxes opcionales -->
+      <article>
+        <h3>Áreas de interés (opcional)</h3>
+        <p>Selecciona todas las que apliquen.</p>
+        
+        <div>
+          @for (interest of interestOptions; track interest) {
+            <mat-checkbox [checked]="interests?.value?.includes(interest)"
+            (change)="onInterestChange(interest, $event.checked)">
+            {{ interest }}
+          </mat-checkbox>
+        }
+      </div>
+    </article>
+  </section>
+  
+  <section >
+    <button matButton="filled" type="submit" [disabled]="studentForm.invalid">
+      Guardar alumno
+    </button>
+  </section>
+</form>
+</main>
