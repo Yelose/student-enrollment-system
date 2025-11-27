@@ -1,1 +1,10 @@
 <button matButton="tonal" routerLink="/students-form">Añadir un alumno</button>
+<h2>Listado de estudiantes</h2>
+
+@for (student of students; track student.id) {
+  <pre>{{ student | json }}</pre>
+}
+
+@if (!students || students.length === 0) {
+  <p>No hay estudiantes.</p>
+}
