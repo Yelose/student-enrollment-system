@@ -12,6 +12,7 @@ import { STUDENT_INTERESTS } from '../../../../core/models/student/student-inter
 import { EmploymentStatus } from '../../../../core/models/student/student-status.type';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { StudentInterface } from '../../../../core/models/student/student-interface';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-students-form',
@@ -24,6 +25,9 @@ export class StudentsForm {
 
   private fb = inject(NonNullableFormBuilder)
   private studentsService = inject(StudentService)
+  private snackbar = inject(SnackBarService)
+  private router = inject(Router)
+
   readonly employmentStatusOptions = EMPLOYMENT_STATUS_OPTIONS
   readonly interestOptions = STUDENT_INTERESTS
 
@@ -67,6 +71,13 @@ export class StudentsForm {
   }
   
   submit() {
+
+    if (this.studentForm.invalid){
+      this.studentForm.markAllAsTouched()
+      this.snackbar.show("Formulario incompleto o incorrecto", 'error')
+      return
+    }
+
     const {
       firstName, lastName, email, phone, nationalId, address, city, province,
       employmentStatus, interests
@@ -83,7 +94,9 @@ export class StudentsForm {
       province: province,
       employmentStatus: employmentStatus as EmploymentStatus, // cast seguro por tus opciones
       interests: interests ,
-    });
+    }).then(() => {
+      this.router.navigate(['/students'])
+    }).catch((err) => { console.log(err)})
     console.log(this.studentForm.value)
    }
 }

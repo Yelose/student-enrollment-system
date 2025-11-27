@@ -36,13 +36,14 @@ export class StudentService {
 
     this.loader.show();
 
-    addDoc(col, studentData)
+    return addDoc(col, studentData)
       .then(() => {
         this.snackbar.show("Alumno añadido con éxito", "success");
       })
       .catch((error) => {
         console.error(error);
         this.snackbar.show("No se pudo añadir el alumno", "error");
+        throw error
       })
       .finally(() => {
         this.loader.hide();
@@ -54,14 +55,16 @@ export class StudentService {
 
     this.loader.show()
 
-    updateDoc(ref, student).then(() => {
+    return updateDoc(ref, student).then(() => {
       this.snackbar.show("Alumno actualizado correctamente", 'success')
     }).catch((error) => {
       this.snackbar.show(error, "error")
+      throw error
     }).finally(() => {
       this.loader.hide()
     })
   }
+  
   getStudentById(id: string){
     const ref = doc(this.firestore, "dicampus-students", id)
 
