@@ -11,6 +11,7 @@ import { EMPLOYMENT_STATUS_OPTIONS } from '../../../../core/models/student/stude
 import { STUDENT_INTERESTS } from '../../../../core/models/student/student-interests.constant';
 import { EmploymentStatus } from '../../../../core/models/student/student-status.type';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { StudentInterface } from '../../../../core/models/student/student-interface';
 
 @Component({
   selector: 'app-students-form',
@@ -22,7 +23,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 export class StudentsForm {
 
   private fb = inject(NonNullableFormBuilder)
-
+  private studentsService = inject(StudentService)
   readonly employmentStatusOptions = EMPLOYMENT_STATUS_OPTIONS
   readonly interestOptions = STUDENT_INTERESTS
 
@@ -66,6 +67,23 @@ export class StudentsForm {
   }
   
   submit() {
+    const {
+      firstName, lastName, email, phone, nationalId, address, city, province,
+      employmentStatus, interests
+    } = this.studentForm.getRawValue()
+
+    this.studentsService.addStudent({
+      firstName: firstName,
+      lastName: lastName,
+      email: email,
+      phone: phone,
+      nationalId: nationalId,
+      address: address,
+      city: city ,
+      province: province,
+      employmentStatus: employmentStatus as EmploymentStatus, // cast seguro por tus opciones
+      interests: interests ,
+    });
     console.log(this.studentForm.value)
    }
 }
