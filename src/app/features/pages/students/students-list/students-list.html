@@ -1,9 +1,18 @@
 <h2>Listado de estudiantes</h2>
 
+<mat-form-field appearance="outline">
+  <mat-label>Buscar estudiante</mat-label>
+  <input
+    matInput
+    type="search"
+    placeholder="Nombre, apellidos, email..."
+    (input)="onFilterChange($any($event.target).value)"
+  />
+</mat-form-field>
 
 <button matButton="filled" routerLink="/students-form">Añadir Estudiante</button>
 
-<table mat-table [dataSource]="students()" multiTemplateDataRows>
+<table mat-table [dataSource]="filteredStudents()" multiTemplateDataRows>
 
   <!-- Nombre -->
   <ng-container matColumnDef="firstName">
@@ -54,10 +63,10 @@
   ></tr>
 
   <tr
-  mat-row
-  *matRowDef="let row; columns: detailColumns"
-  class="detail-row"
-></tr>
+    mat-row
+    *matRowDef="let row; columns: detailColumns"
+    class="detail-row"
+  ></tr>
 
   <!-- Fila de detalle expandida -->
   <ng-container matColumnDef="expandedDetail">
@@ -75,8 +84,8 @@
           <p><strong>Provincia:</strong> {{ s.province }}</p>
           <p><strong>Estado laboral:</strong> {{ s.employmentStatus }}</p>
           <p><strong>Intereses:</strong> {{ s.interests?.join(', ') }}</p>
-          <p><strong>Creado:</strong> {{ s.createdAt | date:'short' }}</p>
-          <p><strong>Actualizado:</strong> {{ s.updatedAt | date:'short' }}</p>
+          <p><strong>Creado:</strong> {{ toShortDate(s.createdAt) }}</p>
+          <p><strong>Actualizado:</strong> {{ toShortDate(s.updatedAt) }}</p>
 
           <footer>
             <button

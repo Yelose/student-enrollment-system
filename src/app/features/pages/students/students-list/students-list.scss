@@ -2,20 +2,32 @@ table {
     width: 100%;
   }
   
-  /* La fila de detalle, cuando está vacía, debe ocupar 0px de alto */
-  tr.detail-row {
+  .main-row {
+    cursor: pointer;
+  }
+  
+  .detail-row {
     height: 0;
   }
   
-  /* Evitar padding/borde en la celda cuando no hay contenido */
-  td.detail-cell {
-    padding: 0;
-    border-bottom-width: 0;
+  .detail-wrapper {
+    overflow: hidden;
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 200ms cubic-bezier(0.4, 0, 0.2, 1);
   }
   
-  /* Estilo de la caja cuando SÍ hay contenido */
-  .detail-content {
+  .detail-wrapper.expanded {
+    grid-template-rows: 1fr;
+  }
+  
+  .detail-box {
     padding: 16px;
-    display: block;
+    border-top: solid 1px #ddd;
+  }
+  
+  button.rotated {
+    transform: rotate(180deg);
+    transition: transform 200ms ease;
   }
   

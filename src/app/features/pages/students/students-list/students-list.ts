@@ -1,14 +1,20 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 
 import { StudentService } from '../../../../core/services/student';
 import { StudentInterface } from '../../../../core/models/student/student-interface';
-import { ConfirmDialogComponent, ConfirmDialogData } from '../../../../shared/components/confirm-dialog/confirm-dialog';
+import {
+  ConfirmDialogComponent,
+  ConfirmDialogData,
+} from '../../../../shared/components/confirm-dialog/confirm-dialog';
+import { DateConvertionService } from '../../../../shared/services/date-convertion';
 
 @Component({
   selector: 'app-students-list',
@@ -20,6 +26,8 @@ import { ConfirmDialogComponent, ConfirmDialogData } from '../../../../shared/co
     MatButtonModule,
     MatIconModule,
     MatDialogModule,
+    MatFormFieldModule,
+    MatInputModule,
     ConfirmDialogComponent,
   ],
   templateUrl: './students-list.html',
@@ -28,8 +36,9 @@ import { ConfirmDialogComponent, ConfirmDialogData } from '../../../../shared/co
 export class StudentsList {
   private studentService = inject(StudentService);
   private dialog = inject(MatDialog);
+  private dateService = inject(DateConvertionService);
 
-  /** Lista reactiva */
+  /** Lista reactiva original (sin filtro) */
   readonly students = this.studentService.studentsSignal;
 
   /** Columnas principales visibles */
@@ -44,13 +53,40 @@ export class StudentsList {
   /** Fila secundaria (detalle expandido) */
   readonly detailColumns = ['expandedDetail'] as const;
 
-  /** Almacena qué fila está expandida */
+  /** Id de la fila expandida */
   expandedId = signal<string | null>(null);
+
+  /** Texto de filtro (nombre, apellidos, email, teléfono) */
+  private readonly filterTerm = signal<string>('');
+
+  /** Lista filtrada que usará la tabla como dataSource */
+  readonly filteredStudents = computed(() => {
+    const term = this.filterTerm().trim().toLowerCase();
+    const data = this.students();
+
+    if (!term) return data;
+
+    return data.filter((s) => {
+      const values = [
+        s.firstName,
+        s.lastName,
+        s.email,
+        s.province,
+      ].filter(Boolean) as string[];
+
+      return values.some((v) => v.toLowerCase().includes(term));
+    });
+  });
 
   toggleExpand(student: StudentInterface): void {
     this.expandedId.update((current) =>
-      current === student.id ? null : student.id
+      current === student.id ? null : student.id,
     );
+  }
+
+  /** Handler para el input del filtro */
+  onFilterChange(term: string): void {
+    this.filterTerm.set(term);
   }
 
   confirmDelete(student: StudentInterface): void {
@@ -72,8 +108,10 @@ export class StudentsList {
     });
   }
 
-  isExpanded = (index: number, row: StudentInterface) => {
-    return this.expandedId() === row.id;
-  };
-  
+  isExpanded = (_index: number, row: StudentInterface) =>
+    this.expandedId() === row.id;
+
+  toShortDate(date: Date | null | undefined): string {
+    return this.dateService.toShortDate(date);
+  }
 }
