@@ -1,0 +1,21 @@
+table {
+    width: 100%;
+  }
+  
+  /* La fila de detalle, cuando está vacía, debe ocupar 0px de alto */
+  tr.detail-row {
+    height: 0;
+  }
+  
+  /* Evitar padding/borde en la celda cuando no hay contenido */
+  td.detail-cell {
+    padding: 0;
+    border-bottom-width: 0;
+  }
+  
+  /* Estilo de la caja cuando SÍ hay contenido */
+  .detail-content {
+    padding: 16px;
+    display: block;
+  }
+  

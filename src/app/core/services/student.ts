@@ -1,110 +1,164 @@
-import { Injectable, computed, inject, signal } from '@angular/core';
-import { Firestore, addDoc, collection, collectionData, deleteDoc, doc, getDoc, updateDoc } from '@angular/fire/firestore';
-import { LoaderService } from '../../shared/services/loader-service';
+import { Injectable, inject, signal, effect } from '@angular/core';
+import {
+  addDoc,
+  collection,
+  collectionData,
+  deleteDoc,
+  doc,
+  Firestore,
+  updateDoc,
+} from '@angular/fire/firestore';
+
 import { StudentInterface } from '../models/student/student-interface';
+import { DateConvertionService } from '../../shared/services/date-convertion';
+import { LoaderService } from '../../shared/services/loader-service';
 import { SnackBarService } from '../../shared/services/snack-bar-service';
-import { toSignal } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root',
 })
 export class StudentService {
-  private firestore = inject(Firestore)
-  private loader = inject(LoaderService)
-  private snackbar = inject(SnackBarService)
+  private firestore = inject(Firestore);
+  private dateService = inject(DateConvertionService);
+  private loader = inject(LoaderService);
+  private snackbar = inject(SnackBarService);
 
-  private studentsCollection = computed(() => {
-    return collection(this.firestore, `dicampus-students`)
-  })
+  // Colección fija "dicampus-students"
+  private studentsCollection = collection(this.firestore, 'dicampus-students');
 
-  private studentSignal = signal<StudentInterface | null>(null)
+  // Signal reactiva
+  readonly studentsSignal = signal<StudentInterface[]>([]);
 
-  private studentsSignal = toSignal(
-    collectionData(this.studentsCollection(), { idField: 'id' }),
-    { initialValue: [] as StudentInterface[] }
-  );
-  
-  addStudent(student: Omit<StudentInterface, "id" | "createdAt" | "updatedAt">) {
-    const col = this.studentsCollection();
+  constructor() {
+    effect((onCleanup) => {
+      this.loader.show();
+      let first = true;
+
+      const sub = collectionData(this.studentsCollection, {
+        idField: 'id',
+      }).subscribe({
+        next: (raw) => {
+          const parsed = (raw as StudentInterface[]).map(s =>
+            this.parseStudent(s)
+          );
+
+          this.studentsSignal.set(parsed);
+
+          if (first) {
+            this.loader.hide();
+            first = false;
+          }
+        },
+        error: () => {
+          this.loader.hide();
+        },
+      });
+
+      onCleanup(() => sub.unsubscribe());
+    });
+  }
+
+  // ------------------------------------------
+  // 🔄 Parseo (Firestore → Modelo)
+  // ------------------------------------------
+  private parseStudent(s: StudentInterface): StudentInterface {
+    return {
+      ...s,
+      createdAt: this.dateService.toValidDate(s.createdAt),
+      updatedAt: this.dateService.toValidDate(s.updatedAt),
+    };
+  }
+
+  // ------------------------------------------
+  // 🔧 Limpiar valores undefined
+  // ------------------------------------------
+  private stripUndefined<T extends Record<string, any>>(obj: T): T {
+    const out: any = {};
+    for (const k of Object.keys(obj)) {
+      const v = obj[k];
+      if (v !== undefined) out[k] = v;
+    }
+    return out;
+  }
+
+  // ------------------------------------------
+  // 🔄 Preparar para Firestore (Modelo → Firestore)
+  // ------------------------------------------
+  private prepForFirestore(student: Partial<StudentInterface>) {
+    return this.stripUndefined({
+      ...student,
+      createdAt: this.dateService.toValidDate(student.createdAt ?? null),
+      updatedAt: this.dateService.toValidDate(student.updatedAt ?? null),
+    });
+  }
+
+  // ------------------------------------------
+  // 🟢 Crear
+  // ------------------------------------------
+  addStudent(
+    student: Omit<StudentInterface, 'id' | 'createdAt' | 'updatedAt'>
+  ) {
     const now = new Date();
 
-    const studentData: Omit<StudentInterface, "id"> = {
+    const data = {
       ...student,
       createdAt: now,
-      updatedAt: now
+      updatedAt: now,
     };
+
+    const prepared = this.prepForFirestore(data);
 
     this.loader.show();
 
-    return addDoc(col, studentData)
+    return addDoc(this.studentsCollection, prepared)
       .then(() => {
-        this.snackbar.show("Alumno añadido con éxito", "success");
+        this.snackbar.show('Alumno añadido con éxito', 'success');
       })
-      .catch((error) => {
-        console.error(error);
-        this.snackbar.show("No se pudo añadir el alumno", "error");
-        throw error
+      .catch((err) => {
+        console.error(err);
+        this.snackbar.show('No se pudo añadir el alumno', 'error');
+        throw err;
       })
-      .finally(() => {
-        this.loader.hide();
-      });
+      .finally(() => this.loader.hide());
   }
 
-  updateStudent(id: string, student: Partial<StudentInterface>) {
-    const ref = doc(this.firestore, "dicampus-students", id)
+  // ------------------------------------------
+  // 🟡 Actualizar
+  // ------------------------------------------
+  updateStudent(id: string, updates: Partial<StudentInterface>) {
+    const ref = doc(this.firestore, `dicampus-students/${id}`);
 
-    this.loader.show()
+    const prepared = this.prepForFirestore({
+      ...updates,
+      updatedAt: new Date(),
+    });
 
-    return updateDoc(ref, student).then(() => {
-      this.snackbar.show("Alumno actualizado correctamente", 'success')
-    }).catch((error) => {
-      this.snackbar.show(error, "error")
-      throw error
-    }).finally(() => {
-      this.loader.hide()
-    })
-  }
-  
-  getStudentById(id: string){
-    const ref = doc(this.firestore, "dicampus-students", id)
+    this.loader.show();
 
-    this.loader.show()
-
-    getDoc(ref).then((result) => {
-      if (!result.exists()) {
-        this.studentSignal.set(null)
-      return
-      }
-      const data = result.data();
-      const student: StudentInterface = {id: result.id, ...data} as StudentInterface
-      this.studentSignal.set(student)
-      return student
-      
-    }).catch((error) => {
-      this.studentSignal.set(null)
-      this.snackbar.show(error, "error")
-    }).finally(() => {
-      this.loader.hide()
-    })
+    return updateDoc(ref, prepared)
+      .then(() => this.snackbar.show('Alumno actualizado', 'success'))
+      .catch((err) => {
+        console.error(err);
+        this.snackbar.show('Error al actualizar alumno', 'error');
+        throw err;
+      })
+      .finally(() => this.loader.hide());
   }
 
+  // ------------------------------------------
+  // 🔴 Eliminar
+  // ------------------------------------------
   deleteStudent(id: string) {
-    const docRef = doc(this.firestore, "dicampus-students", id)
-    this.loader.show()
+    const ref = doc(this.firestore, `dicampus-students/${id}`);
 
-    deleteDoc(docRef).then(() => {
-      this.snackbar.show("Alumno eliminado", "success")
-    }).catch((err) => {
-      this.snackbar.show(err, "error")
-    }).finally(() => { this.loader.hide() })
+    this.loader.show();
+
+    return deleteDoc(ref)
+      .then(() => this.snackbar.show('Alumno eliminado', 'success'))
+      .catch((err) => {
+        console.error(err);
+        this.snackbar.show('Error al eliminar alumno', 'error');
+      })
+      .finally(() => this.loader.hide());
   }
-
-  getAllStudents() {
-    return this.studentsSignal()
-  }
-
 }
-
-
-
-

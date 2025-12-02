@@ -17,6 +17,6 @@ export interface StudentInterface {
   employmentStatus: EmploymentStatus; // estado laboral
   interests: string[];                // áreas de interés
 
-  createdAt: Date;
-  updatedAt?: Date;
+  createdAt: Date | null;
+  updatedAt?: Date| null;
 }
