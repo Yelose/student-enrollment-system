@@ -195,9 +195,8 @@
 }
 
 html {
-  @include mat.theme((
-    density: 0,
-  ));
+  @include mat.theme((density: 0,
+    ));
 }
 
 
@@ -235,46 +234,111 @@ mat-toolbar {
       container-text-color: var(--mat-sys-on-primary-container),
     ));
 }
+
 a[matButton],
 button[matButton],
 a[mat-button],
 button[mat-button] {
-  @include mat.button-overrides((
-    filled-container-shape: var(--mat-sys-corner-large),
-    tonal-container-shape: var(--mat-sys-corner-large),
-    outlined-container-shape: var(--mat-sys-corner-large),
-    text-container-shape: var(--mat-sys-corner-large),
-    protected-container-shape: var(--mat-sys-corner-large),
-    protected-container-elevation-shadow: var(--mat-sys-level2),
-    protected-hover-container-elevation-shadow: var(--mat-sys-level3),
-    protected-focus-container-elevation-shadow: var(--mat-sys-level3),
-    protected-pressed-container-elevation-shadow: var(--mat-sys-level1),
-   ));
+  @include mat.button-overrides((filled-container-shape: var(--mat-sys-corner-large),
+      tonal-container-shape: var(--mat-sys-corner-large),
+      outlined-container-shape: var(--mat-sys-corner-large),
+      text-container-shape: var(--mat-sys-corner-large),
+      protected-container-shape: var(--mat-sys-corner-large),
+      protected-container-elevation-shadow: var(--mat-sys-level2),
+      protected-hover-container-elevation-shadow: var(--mat-sys-level3),
+      protected-focus-container-elevation-shadow: var(--mat-sys-level3),
+      protected-pressed-container-elevation-shadow: var(--mat-sys-level1),
+    ));
+
+  /* 🔴 Botón de error (filled) */
+  &.error {
+    @include mat.button-overrides(( // fondo del botón
+        filled-container-color: var(--mat-sys-error),
+        // color del texto
+        filled-label-text-color: var(--mat-sys-on-error),
+
+        // opcional: cómo se ve el “state layer” (hover / focus / pressed)
+        filled-state-layer-color: var(--mat-sys-on-error),
+        filled-hover-state-layer-opacity: 0.08,
+        filled-focus-state-layer-opacity: 0.12,
+        filled-pressed-state-layer-opacity: 0.12,
+        filled-ripple-color: var(--mat-sys-on-error),
+      ));
+  }
 }
 
 
 
 .snackbar-success {
-  @include mat.snack-bar-overrides((
-    container-color: var(--mat-sys-tertiary),
+  @include mat.snack-bar-overrides((container-color: var(--mat-sys-tertiary),
       supporting-text-color: var(--mat-sys-on-tertiary),
     ));
 }
 
 .snackbar-error {
-  @include mat.snack-bar-overrides((
-    container-color: var(--mat-sys-error),
+  @include mat.snack-bar-overrides((container-color: var(--mat-sys-error),
       supporting-text-color: var(--mat-sys-on-error),
     ));
 }
 
 .snackbar-info {
-  @include mat.snack-bar-overrides((
-    container-color: var(--mat-sys-secondary),
+  @include mat.snack-bar-overrides((container-color: var(--mat-sys-secondary),
       supporting-text-color: var(--mat-sys-on-secondary),
     ));
 }
+
 .mat-mdc-snack-bar-container .mdc-snackbar__action {
   text-transform: uppercase;
+}
+
+
+// 🎨 Estilos globales para tablas de Angular Material
+
+
+
+mat-table,
+table[mat-table],
+table.mat-mdc-table {
+  // Tokens de tabla aplicados SOLO a tablas material (igual que haces con botones)
+  @include mat.table-overrides(( // Fondo base de la tabla
+      background-color: var(--mat-sys-surface),
+      // Color del texto de la cabecera
+      header-headline-color: var(--mat-sys-on-primary),
+      // Color del borde/outline de las filas
+      row-item-outline-color: var(--mat-sys-outline-variant),
+    ));
+
+  // CABECERA
+  .mat-mdc-header-row {
+    background-color: var(--mat-sys-tertiary);
   }
 
+  .mat-mdc-header-cell {
+    color: var(--mat-sys-on-tertiary);
+    font-weight: 600;
+  }
+
+  // ZEBRA para tablas con fila de detalle (visible + detalle, visible + detalle...)
+  //
+  // Filas visibles 1, 5, 9, 13...  → 4n + 1  → color A
+  .mat-mdc-row:nth-child(4n + 1) {
+    background-color: var(--mat-sys-surface-container-low);
+  }
+
+  // Filas visibles 3, 7, 11, 15... → 4n + 3  → color B
+  .mat-mdc-row:nth-child(4n + 3) {
+    background-color: var(--mat-sys-tertiary-fixed);
+  }
+
+  // Hover solo sobre filas visibles (mismas series)
+  .mat-mdc-row:nth-child(4n + 1):hover,
+  .mat-mdc-row:nth-child(4n + 3):hover {
+    background-color: var(--mat-sys-surface-container-high);
+  }
+
+  // BORDES
+  .mat-mdc-row .mat-mdc-cell,
+  .mat-mdc-header-row .mat-mdc-header-cell {
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
+  }
+}

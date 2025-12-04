@@ -1,16 +1,21 @@
-<h2>Listado de estudiantes</h2>
+<header>
+  <h2>Listado de estudiantes</h2>
+  <div>
 
-<mat-form-field appearance="outline">
-  <mat-label>Buscar estudiante</mat-label>
-  <input
-    matInput
-    type="search"
-    placeholder="Nombre, apellidos, email..."
-    (input)="onFilterChange($any($event.target).value)"
-  />
-</mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Buscar estudiante</mat-label>
+      <input
+        matInput
+        type="search"
+        placeholder="Nombre, apellidos, email..."
+        (input)="onFilterChange($any($event.target).value)"
+      />
+    </mat-form-field>
+    
+    <button matButton="filled" routerLink="/students-form">Añadir Estudiante</button>
+  </div>
 
-<button matButton="filled" routerLink="/students-form">Añadir Estudiante</button>
+</header>
 
 <table mat-table [dataSource]="filteredStudents()" multiTemplateDataRows>
 
@@ -98,7 +103,7 @@
 
             <button
               matButton="filled"
-              (click)="confirmDelete(s)"
+              (click)="confirmDelete(s)" class="error"
             >
               Eliminar
             </button>

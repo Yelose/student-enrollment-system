@@ -5,11 +5,11 @@
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
-  <button mat-button type="button" (click)="cancel()">
+  <button matButton="filled" type="button" (click)="cancel()">
     {{ data.cancelLabel || 'Cancelar' }}
   </button>
 
-  <button mat-button color="warn" type="button" (click)="confirm()">
+  <button matButton="filled" type="button" (click)="confirm()" class="error">
     {{ data.confirmLabel || 'Aceptar' }}
   </button>
 </mat-dialog-actions>

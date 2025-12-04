@@ -1,3 +1,17 @@
+header {
+  display: flex;
+  flex-direction: column;
+  div {
+    align-items: center;
+    mat-form-field{
+      width: max(50%, 300px);
+    }
+    display: flex;
+    justify-content: space-between;
+  }
+}
+
+
 table {
     width: 100%;
   }
