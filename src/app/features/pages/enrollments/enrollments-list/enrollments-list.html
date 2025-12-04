@@ -1,1 +1,206 @@
-<p>enrollments-list works!</p>
+<header>
+    <h2>Listado de matrículas</h2>
+  
+    <div>
+        <button matButton="filled" routerLink="/enrollments-form">
+            Nueva matrícula
+          </button>
+      <!-- Filtro por estudiante -->
+      <mat-form-field appearance="outline">
+        <mat-label>Filtrar por estudiante</mat-label>
+        <input
+          matInput
+          type="text"
+          [matAutocomplete]="studentAuto"
+          (input)="onStudentFilterChange($any($event.target).value)"
+          placeholder="Nombre o email..."
+        />
+  
+        <mat-autocomplete
+          #studentAuto="matAutocomplete"
+          (optionSelected)="onStudentFilterChange($any($event.option.value))"
+        >
+          <mat-option
+            *ngFor="let s of studentOptions()"
+            [value]="s.display"
+          >
+            {{ s.display }}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+  
+      <!-- Filtro por curso -->
+      <mat-form-field appearance="outline">
+        <mat-label>Filtrar por curso</mat-label>
+        <input
+          matInput
+          type="text"
+          [matAutocomplete]="courseAuto"
+          (input)="onCourseFilterChange($any($event.target).value)"
+          placeholder="Nombre o código..."
+        />
+  
+        <mat-autocomplete
+          #courseAuto="matAutocomplete"
+          (optionSelected)="onCourseFilterChange($any($event.option.value))"
+        >
+          <mat-option
+            *ngFor="let c of courseOptions()"
+            [value]="c.display"
+          >
+            {{ c.display }}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+  
+      <!-- Búsqueda general libre (estado, email, etc.) -->
+      <mat-form-field appearance="outline">
+        <mat-label>Búsqueda general</mat-label>
+        <input
+          matInput
+          type="search"
+          placeholder="Estado, email..."
+          (input)="onTextFilterChange($any($event.target).value)"
+        />
+      </mat-form-field>
+  
+
+    </div>
+  </header>
+  
+  <table mat-table [dataSource]="filteredEnrollments()" multiTemplateDataRows>
+    <!-- Estudiante -->
+    <ng-container matColumnDef="student">
+      <th mat-header-cell *matHeaderCellDef>Estudiante</th>
+      <td mat-cell *matCellDef="let e">
+        {{ e.studentName }}<br />
+        <small>{{ e.studentEmail }}</small>
+      </td>
+    </ng-container>
+  
+    <!-- Curso -->
+    <ng-container matColumnDef="course">
+      <th mat-header-cell *matHeaderCellDef>Curso</th>
+      <td mat-cell *matCellDef="let e">
+        {{ e.courseName }}<br />
+        <small>{{ e.courseCode }}</small>
+      </td>
+    </ng-container>
+  
+    <!-- Estado -->
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef>Estado</th>
+      <td mat-cell *matCellDef="let e">
+        {{ getStatusLabel(e.status) }}
+      </td>
+    </ng-container>
+  
+    <!-- Fecha inicio -->
+    <ng-container matColumnDef="startDate">
+      <th mat-header-cell *matHeaderCellDef>Inicio</th>
+      <td mat-cell *matCellDef="let e">
+        {{ toShortDate(e.startDate) }}
+      </td>
+    </ng-container>
+  
+    <!-- Fecha fin -->
+    <ng-container matColumnDef="endDate">
+      <th mat-header-cell *matHeaderCellDef>Fin</th>
+      <td mat-cell *matCellDef="let e">
+        {{ toShortDate(e.endDate) }}
+      </td>
+    </ng-container>
+  
+    <!-- Botón expandir -->
+    <ng-container matColumnDef="expand">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let e">
+        <button mat-icon-button (click)="toggleExpand(e)">
+          <mat-icon>
+            {{ expandedId() === e.id ? 'expand_less' : 'expand_more' }}
+          </mat-icon>
+        </button>
+      </td>
+    </ng-container>
+  
+    <!-- Fila principal -->
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  
+    <tr
+      mat-row
+      *matRowDef="let row; columns: displayedColumns"
+      class="main-row"
+    ></tr>
+  
+    <tr
+      mat-row
+      *matRowDef="let row; columns: detailColumns"
+      class="detail-row"
+    ></tr>
+  
+    <!-- Fila de detalle expandida -->
+    <ng-container matColumnDef="expandedDetail">
+      <td
+        mat-cell
+        *matCellDef="let e"
+        [attr.colspan]="displayedColumns.length"
+        class="detail-cell"
+      >
+        @if (expandedId() === e.id) {
+          <section class="details">
+            <main>
+              <p><strong>Estudiante:</strong> {{ e.studentName }}</p>
+              <p><strong>Email:</strong> {{ e.studentEmail }}</p>
+  
+              <p><strong>Curso:</strong> {{ e.courseName }}</p>
+              <p><strong>Código:</strong> {{ e.courseCode }}</p>
+  
+              <p>
+                <strong>Estado de la matrícula:</strong>
+                {{ getStatusLabel(e.status) }}
+              </p>
+  
+              <p>
+                <strong>Fecha de inicio:</strong>
+                {{ toShortDate(e.startDate) }}
+              </p>
+  
+              <p>
+                <strong>Fecha de fin:</strong>
+                {{ toShortDate(e.endDate) }}
+              </p>
+  
+              @if (e.createdAt) {
+                <p>
+                  <strong>Creada:</strong>
+                  {{ toShortDate(e.createdAt) }}
+                </p>
+              }
+  
+              @if (e.updatedAt) {
+                <p>
+                  <strong>Actualizada:</strong>
+                  {{ toShortDate(e.updatedAt) }}
+                </p>
+              }
+            </main>
+  
+            <footer>
+              <button matButton="tonal" (click)="editEnrollment(e)">
+                Editar
+              </button>
+  
+              <button
+                matButton="filled"
+                (click)="confirmDelete(e)"
+                class="error"
+              >
+                Eliminar
+              </button>
+            </footer>
+          </section>
+        }
+      </td>
+    </ng-container>
+  </table>
+  
