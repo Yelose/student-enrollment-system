@@ -17,12 +17,12 @@ export interface CourseInterface {
   interests: CourseInterest[];
 
   /** Planned start date of the course */
-  startDate: Date;
+  startDate: Date | null;
 
   /** Planned end date of the course */
-  endDate: Date;
+  endDate: Date | null;
 
   /** Timestamps managed by the backend / Firestore */
-  createdAt?: Date;
-  updatedAt?: Date;
+  createdAt?: Date | null;
+  updatedAt?: Date | null;
 }
