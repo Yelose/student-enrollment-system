@@ -1,6 +1,14 @@
 import { Injectable, effect, inject, signal } from '@angular/core';
-import { toObservable } from '@angular/core/rxjs-interop';
-import { Firestore, collection, collectionData, addDoc, doc, updateDoc, deleteDoc } from '@angular/fire/firestore';
+import {
+  Firestore,
+  collection,
+  collectionData,
+  addDoc,
+  doc,
+  updateDoc,
+  deleteDoc,
+} from '@angular/fire/firestore';
+
 import { DateConvertionService } from '../../shared/services/date-convertion';
 import { LoaderService } from '../../shared/services/loader-service';
 import { SnackBarService } from '../../shared/services/snack-bar-service';
@@ -15,16 +23,12 @@ export class CoursesService {
   private loader = inject(LoaderService);
   private snackbar = inject(SnackBarService);
 
-  // Colección fija "courses"
-  private coursesCollection = collection(this.firestore, 'courses');
+  // Colección fija "dicampus-courses" (coincide con las reglas de Firestore)
+  private coursesCollection = collection(this.firestore, 'dicampus-courses');
 
-  // Estado reactivo
+  // Estado reactivo en memoria
   readonly coursesSignal = signal<CourseInterface[]>([]);
   readonly selectedCourseSignal = signal<CourseInterface | null>(null);
-
-  // Opcional: exposición como Observable tipado (#80)
-  readonly courses$ = toObservable(this.coursesSignal);
-  readonly selectedCourse$ = toObservable(this.selectedCourseSignal);
 
   constructor() {
     effect((onCleanup) => {
@@ -36,7 +40,7 @@ export class CoursesService {
       }).subscribe({
         next: (raw) => {
           const parsed = (raw as CourseInterface[]).map((c) =>
-            this.parseCourse(c)
+            this.parseCourse(c),
           );
 
           this.coursesSignal.set(parsed);
@@ -44,8 +48,10 @@ export class CoursesService {
           // Mantener coherente el curso seleccionado
           const selected = this.selectedCourseSignal();
           if (selected) {
-            const updated = parsed.find((co) => co.id === selected.id) ?? null;
-            this.selectedCourseSignal.set(updated);
+            const stillExists = parsed.some((co) => co.id === selected.id)
+            if (!stillExists) {
+              this.selectedCourseSignal.set(null)
+            }
           }
 
           if (first) {
@@ -70,11 +76,6 @@ export class CoursesService {
     this.selectedCourseSignal.set(course);
   }
 
-  // Helper por id desde el signal (sin ir a Firestore)
-  getCourseById(id: string): CourseInterface | undefined {
-    return this.coursesSignal().find((c) => c.id === id);
-  }
-
   // ------------------------------------------
   // 🔄 Parseo (Firestore → Modelo)
   // ------------------------------------------
@@ -89,17 +90,15 @@ export class CoursesService {
   }
 
   // ------------------------------------------
-  // 🔧 Limpiar valores undefined (sin any)
+  // 🔧 Limpiar valores undefined 
   // ------------------------------------------
-  private stripUndefined<T extends Record<string, unknown>>(obj: T): T {
-    const out: Partial<T> = {};
-    for (const key of Object.keys(obj) as (keyof T)[]) {
-      const value = obj[key];
-      if (value !== undefined) {
-        out[key] = value;
-      }
+  private stripUndefined<T extends Record<string, any>>(obj: T): T {
+    const out: any = {};
+    for (const k of Object.keys(obj)) {
+      const v = obj[k];
+      if (v !== undefined) out[k] = v;
     }
-    return out as T;
+    return out;
   }
 
   // ------------------------------------------
@@ -119,7 +118,7 @@ export class CoursesService {
   // 🟢 Crear curso
   // ------------------------------------------
   addCourse(
-    course: Omit<CourseInterface, 'id' | 'createdAt' | 'updatedAt'>
+    course: Omit<CourseInterface, 'id' | 'createdAt' | 'updatedAt'>,
   ) {
     const now = new Date();
 
@@ -149,7 +148,7 @@ export class CoursesService {
   // 🟡 Actualizar curso
   // ------------------------------------------
   updateCourse(id: string, updates: Partial<CourseInterface>) {
-    const ref = doc(this.firestore, `courses/${id}`);
+    const ref = doc(this.firestore, `dicampus-courses/${id}`);
 
     const prepared = this.prepForFirestore({
       ...updates,
@@ -172,7 +171,7 @@ export class CoursesService {
   // 🔴 Eliminar curso
   // ------------------------------------------
   deleteCourse(id: string) {
-    const ref = doc(this.firestore, `courses/${id}`);
+    const ref = doc(this.firestore, `dicampus-courses/${id}`);
 
     this.loader.show();
 

@@ -24,6 +24,11 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
+    path: "courses-form",
+    loadComponent: () =>
+      import("./features/pages/courses/course-form/course-form").then((m) => m.CourseForm),
+  },
+  {
     path: 'enrollments',
     loadComponent: () =>
       import('./features/pages/enrollments/enrollments-list/enrollments-list')

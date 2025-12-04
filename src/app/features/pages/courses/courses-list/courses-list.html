@@ -1,1 +1,120 @@
-<p>courses-list works!</p>
+<header>
+  <h2>Listado de cursos</h2>
+
+  <div>
+    <mat-form-field appearance="outline">
+      <mat-label>Buscar curso</mat-label>
+      <input matInput type="search" placeholder="Nombre, código, intereses..."
+        (input)="onFilterChange($any($event.target).value)" />
+    </mat-form-field>
+
+    <button matButton="filled" routerLink="/courses-form">
+      Añadir curso
+    </button>
+  </div>
+</header>
+
+<table mat-table [dataSource]="filteredCourses()" multiTemplateDataRows>
+  <!-- Nombre -->
+  <ng-container matColumnDef="name">
+    <th mat-header-cell *matHeaderCellDef>Nombre</th>
+    <td mat-cell *matCellDef="let c">{{ c.name }}</td>
+  </ng-container>
+
+  <!-- Código -->
+  <ng-container matColumnDef="code">
+    <th mat-header-cell *matHeaderCellDef>Código</th>
+    <td mat-cell *matCellDef="let c">{{ c.code }}</td>
+  </ng-container>
+
+  <!-- Fecha inicio -->
+  <ng-container matColumnDef="startDate">
+    <th mat-header-cell *matHeaderCellDef>Inicio</th>
+    <td mat-cell *matCellDef="let c">
+      {{ toShortDate(c.startDate) }}
+    </td>
+  </ng-container>
+
+  <!-- Fecha fin -->
+  <ng-container matColumnDef="endDate">
+    <th mat-header-cell *matHeaderCellDef>Fin</th>
+    <td mat-cell *matCellDef="let c">
+      {{ toShortDate(c.endDate) }}
+    </td>
+  </ng-container>
+
+  <!-- Botón expandir -->
+  <ng-container matColumnDef="expand">
+    <th mat-header-cell *matHeaderCellDef></th>
+    <td mat-cell *matCellDef="let c">
+      <button mat-icon-button (click)="toggleExpand(c)">
+        <mat-icon>
+          {{ expandedId() === c.id ? 'expand_less' : 'expand_more' }}
+        </mat-icon>
+      </button>
+    </td>
+  </ng-container>
+
+  <!-- Fila principal -->
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+
+  <tr mat-row *matRowDef="let row; columns: displayedColumns" class="main-row"></tr>
+
+  <tr mat-row *matRowDef="let row; columns: detailColumns" class="detail-row"></tr>
+
+  <!-- Fila de detalle expandida -->
+  <ng-container matColumnDef="expandedDetail">
+    <td mat-cell *matCellDef="let c" [attr.colspan]="displayedColumns.length" class="detail-cell">
+      @if (expandedId() === c.id) {
+      <section class="details">
+        <main>
+          <p><strong>Nombre:</strong> {{ c.name }}</p>
+
+          <p><strong>Código:</strong> {{ c.code }}</p>
+
+          @if (c.interests?.length) {
+          <p>
+            <strong>Intereses:</strong>
+            {{ c.interests.join(', ') }}
+          </p>
+          }
+
+          <p>
+            <strong>Fecha de inicio:</strong>
+            {{ toShortDate(c.startDate) }}
+          </p>
+
+          <p>
+            <strong>Fecha de fin:</strong>
+            {{ toShortDate(c.endDate) }}
+          </p>
+
+          @if (c.createdAt) {
+          <p>
+            <strong>Creado:</strong>
+            {{ toShortDate(c.createdAt) }}
+          </p>
+          }
+
+          @if (c.updatedAt) {
+          <p>
+            <strong>Actualizado:</strong>
+            {{ toShortDate(c.updatedAt) }}
+          </p>
+          }
+        </main>
+
+        <footer>
+          <button matButton="tonal" (click)="editCourse(c)">
+            Editar
+          </button>
+
+          <button matButton="filled" (click)="confirmDelete(c)" class="error">
+            Eliminar
+          </button>
+        </footer>
+      </section>
+      }
+    </td>
+  </ng-container>
+</table>

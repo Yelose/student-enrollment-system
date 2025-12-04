@@ -61,6 +61,7 @@ export class StudentService {
         },
         error: () => {
           this.loader.hide();
+          this.snackbar.show("No se pudieron cargar los estudiantes", "error")
         },
       });
 
@@ -108,7 +109,7 @@ export class StudentService {
   }
 
   // ------------------------------------------
-  // 🟢 Crear
+  // 🟢 Crear Alumno
   // ------------------------------------------
   addStudent(
     student: Omit<StudentInterface, 'id' | 'createdAt' | 'updatedAt'>
@@ -138,7 +139,7 @@ export class StudentService {
   }
 
   // ------------------------------------------
-  // 🟡 Actualizar
+  // 🟡 Actualizar Alumno
   // ------------------------------------------
   updateStudent(id: string, updates: Partial<StudentInterface>) {
     const ref = doc(this.firestore, `dicampus-students/${id}`);

@@ -1,0 +1,104 @@
+<main>
+    <form [formGroup]="courseForm" (ngSubmit)="submit()">
+      <section>
+        <h2>Datos del curso</h2>
+  
+        <div>
+          <mat-form-field appearance="outline">
+            <mat-label>Nombre</mat-label>
+            <input matInput formControlName="name" />
+            @if (name?.invalid && (name?.dirty || name?.touched)) {
+              <mat-error>
+                El nombre es obligatorio y debe tener al menos 2 caracteres.
+              </mat-error>
+            }
+          </mat-form-field>
+  
+          <mat-form-field appearance="outline">
+            <mat-label>Código</mat-label>
+            <input matInput formControlName="code" />
+            @if (code?.invalid && (code?.dirty || code?.touched)) {
+              <mat-error>
+                El código es obligatorio y debe tener al menos 2 caracteres.
+              </mat-error>
+            }
+          </mat-form-field>
+        </div>
+      </section>
+
+      <section>
+        <h2>Fechas</h2>
+      
+        <div>
+          <mat-form-field appearance="outline">
+            <mat-label>Fecha de inicio</mat-label>
+            <input
+              matInput
+              [matDatepicker]="startPicker"
+              formControlName="startDate"
+            />
+            <mat-datepicker-toggle matSuffix [for]="startPicker" />
+            <mat-datepicker #startPicker />
+      
+            @if (startDate?.invalid && (startDate?.dirty || startDate?.touched)) {
+              <mat-error>
+                La fecha de inicio es obligatoria.
+              </mat-error>
+            }
+          </mat-form-field>
+      
+          <mat-form-field appearance="outline">
+            <mat-label>Fecha de fin</mat-label>
+            <input
+              matInput
+              [matDatepicker]="endPicker"
+              formControlName="endDate"
+            />
+            <mat-datepicker-toggle matSuffix [for]="endPicker" />
+            <mat-datepicker #endPicker />
+      
+            @if (endDate?.invalid && (endDate?.dirty || endDate?.touched)) {
+              <mat-error>
+                La fecha de fin es obligatoria.
+              </mat-error>
+            }
+          </mat-form-field>
+        </div>
+      </section>
+        
+      <section>
+        <h2>Intereses del curso (opcional)</h2>
+  
+        <article>
+          <h3>Áreas de interés</h3>
+          <p>Selecciona todas las que apliquen.</p>
+  
+          <div>
+            @for (interest of interestOptions; track interest) {
+              <mat-checkbox
+                [checked]="interests?.value?.includes(interest)"
+                (change)="onInterestChange(interest, $event.checked)"
+              >
+                {{ interest }}
+              </mat-checkbox>
+            }
+          </div>
+        </article>
+      </section>
+  
+      <section>
+        <button
+          matButton="filled"
+          type="submit"
+          [disabled]="courseForm.invalid"
+        >
+          @if (isEditMode()) {
+            Actualizar curso
+          } @else {
+            Guardar curso
+          }
+        </button>
+      </section>
+    </form>
+  </main>
+  
