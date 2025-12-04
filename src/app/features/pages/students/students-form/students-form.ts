@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
@@ -31,6 +31,9 @@ export class StudentsForm {
   readonly employmentStatusOptions = EMPLOYMENT_STATUS_OPTIONS
   readonly interestOptions = STUDENT_INTERESTS
 
+  readonly isEditMode = signal(false);
+  private currentStudent = this.studentsService.selectedStudentSignal;
+
   readonly studentForm = this.fb.group({
     firstName: ["", [Validators.required, Validators.minLength(2)]],
     lastName: ["", [Validators.required, Validators.minLength(2)]],
@@ -43,6 +46,49 @@ export class StudentsForm {
     employmentStatus: [""],
     interests: this.fb.control<string[]>([]),
   })
+
+  // ------------------------------------------
+  // 🔥 EFFECT: reacciona al estudiante seleccionado
+  // ------------------------------------------
+  private selectedEffect = effect(() => {
+    const student = this.currentStudent(); // <-- señal reactiva
+
+    if (student) {
+      // Modo edición
+      this.isEditMode.set(true);
+
+      this.studentForm.patchValue({
+        firstName: student.firstName,
+        lastName: student.lastName,
+        email: student.email,
+        phone: student.phone,
+        nationalId: student.nationalId,
+        address: student.address ?? '',
+        city: student.city ?? '',
+        province: student.province ?? '',
+        employmentStatus: student.employmentStatus,
+        interests: student.interests ?? [],
+      });
+
+    } else {
+      // Modo creación
+      this.isEditMode.set(false);
+
+      this.studentForm.reset({
+        firstName: '',
+        lastName: '',
+        email: '',
+        phone: '',
+        nationalId: '',
+        address: '',
+        city: '',
+        province: '',
+        employmentStatus: '',
+        interests: [],
+      });
+    }
+  });
+
 
   get firstName() { return this.studentForm.get("firstName") }
   get lastName() { return this.studentForm.get("lastName") }
@@ -57,22 +103,22 @@ export class StudentsForm {
 
   onInterestChange(interest: string, checked: boolean): void {
     const current = this.interests?.value ?? [];
-  
+
     if (checked && !current.includes(interest)) {
       this.interests?.setValue([...current, interest]);
     }
-  
+
     if (!checked && current.includes(interest)) {
       this.interests?.setValue(current.filter((i) => i !== interest));
     }
-  
+
     this.interests?.markAsDirty();
     this.interests?.markAsTouched();
   }
-  
+
   submit() {
 
-    if (this.studentForm.invalid){
+    if (this.studentForm.invalid) {
       this.studentForm.markAllAsTouched()
       this.snackbar.show("Formulario incompleto o incorrecto", 'error')
       return
@@ -83,20 +129,33 @@ export class StudentsForm {
       employmentStatus, interests
     } = this.studentForm.getRawValue()
 
-    this.studentsService.addStudent({
+    const student: Omit<StudentInterface, 'id' | 'createdAt' | 'updatedAt'> = {
       firstName: firstName,
       lastName: lastName,
       email: email,
       phone: phone,
       nationalId: nationalId,
       address: address,
-      city: city ,
+      city: city,
       province: province,
-      employmentStatus: employmentStatus as EmploymentStatus, // cast seguro por tus opciones
-      interests: interests ,
-    }).then(() => {
-      this.router.navigate(['/students'])
-    }).catch((err) => { console.log(err)})
+      employmentStatus: employmentStatus as EmploymentStatus,
+      interests: interests ?? [],
+    }
+
+    const selectedStudent = this.currentStudent()
+
+    if (selectedStudent) {
+      this.studentsService.updateStudent(selectedStudent.id, student).then(() => {
+        this.studentsService.setSelectedStudent(null)
+        this.router.navigate(["/students"])
+      }).catch((err) => {console.log(err)})
+    } else {
+      this.studentsService.addStudent(student).then(() => {
+        this.router.navigate(["/students"])
+      }).catch((err) => {console.log(err)})
+    }
+
     console.log(this.studentForm.value)
-   }
+
+  }
 }

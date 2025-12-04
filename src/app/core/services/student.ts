@@ -25,9 +25,10 @@ export class StudentService {
 
   // Colección fija "dicampus-students"
   private studentsCollection = collection(this.firestore, 'dicampus-students');
-
+  
   // Signal reactiva
   readonly studentsSignal = signal<StudentInterface[]>([]);
+  readonly selectedStudentSignal = signal<StudentInterface | null>(null);
 
   constructor() {
     effect((onCleanup) => {
@@ -38,11 +39,20 @@ export class StudentService {
         idField: 'id',
       }).subscribe({
         next: (raw) => {
-          const parsed = (raw as StudentInterface[]).map(s =>
+          const parsed = (raw as StudentInterface[]).map((s) =>
             this.parseStudent(s)
           );
 
           this.studentsSignal.set(parsed);
+
+          // Si el alumno seleccionado ya no existe (p.e. borrado), lo limpiamos
+          const selected = this.selectedStudentSignal();
+          if (selected) {
+            const stillExists = parsed.some((st) => st.id === selected.id);
+            if (!stillExists) {
+              this.selectedStudentSignal.set(null);
+            }
+          }
 
           if (first) {
             this.loader.hide();
@@ -56,6 +66,11 @@ export class StudentService {
 
       onCleanup(() => sub.unsubscribe());
     });
+  }
+
+  // 🔹 Setter explícito para el alumno seleccionado
+  setSelectedStudent(student: StudentInterface | null): void {
+    this.selectedStudentSignal.set(student);
   }
 
   // ------------------------------------------

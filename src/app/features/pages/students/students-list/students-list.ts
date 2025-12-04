@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, signal, computed } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -37,9 +37,12 @@ export class StudentsList {
   private studentService = inject(StudentService);
   private dialog = inject(MatDialog);
   private dateService = inject(DateConvertionService);
+  private router = inject(Router)
+
 
   /** Lista reactiva original (sin filtro) */
   readonly students = this.studentService.studentsSignal;
+
 
   /** Columnas principales visibles */
   readonly displayedColumns = [
@@ -114,4 +117,11 @@ export class StudentsList {
   toShortDate(date: Date | null | undefined): string {
     return this.dateService.toShortDate(date);
   }
+
+
+  editStudent(student: StudentInterface): void {
+    this.studentService.setSelectedStudent(student);
+    this.router.navigate(['/students-form']); 
+  }
+
 }

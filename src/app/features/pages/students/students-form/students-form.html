@@ -111,8 +111,11 @@
   
   <section >
     <button matButton="filled" type="submit" [disabled]="studentForm.invalid">
-      Guardar alumno
-    </button>
+      @if (isEditMode()) {
+        Actualizar alumno
+      } @else {
+        Guardar alumno
+      }    </button>
   </section>
 </form>
 </main>
