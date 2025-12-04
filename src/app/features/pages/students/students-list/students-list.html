@@ -4,14 +4,10 @@
 
     <mat-form-field appearance="outline">
       <mat-label>Buscar estudiante</mat-label>
-      <input
-        matInput
-        type="search"
-        placeholder="Nombre, apellidos, email..."
-        (input)="onFilterChange($any($event.target).value)"
-      />
+      <input matInput type="search" placeholder="Nombre, apellidos, email..."
+        (input)="onFilterChange($any($event.target).value)" />
     </mat-form-field>
-    
+
     <button matButton="filled" routerLink="/students-form">Añadir Estudiante</button>
   </div>
 
@@ -56,59 +52,61 @@
   </ng-container>
 
   <!-- Fila principal -->
-  <tr
-    mat-header-row
-    *matHeaderRowDef="displayedColumns"
-  ></tr>
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
 
-  <tr
-    mat-row
-    *matRowDef="let row; columns: displayedColumns"
-    class="main-row"
-  ></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns" class="main-row"></tr>
 
-  <tr
-    mat-row
-    *matRowDef="let row; columns: detailColumns"
-    class="detail-row"
-  ></tr>
+  <tr mat-row *matRowDef="let row; columns: detailColumns" class="detail-row"></tr>
 
   <!-- Fila de detalle expandida -->
   <ng-container matColumnDef="expandedDetail">
-    <td
-      mat-cell
-      *matCellDef="let s"
-      [attr.colspan]="displayedColumns.length"
-      class="detail-cell"
-    >
+    <td mat-cell *matCellDef="let s" [attr.colspan]="displayedColumns.length" class="detail-cell">
       @if (expandedId() === s.id) {
-        <section class="details">
+      <section class="details">
+        <main>
+          <!-- Obligatorios -->
           <p><strong>DNI:</strong> {{ s.nationalId }}</p>
+
+          @if(s.employmentStatus != ""){
+
+            <p><strong>Estado laboral:</strong> {{ s.employmentStatus }}</p>
+          }
+
+          <!-- Intereses → solo si hay array y tiene elementos -->
+          @if (s.interests?.length > 0) {
+          <p><strong>Intereses:</strong> {{ s.interests.join(', ') }}</p>
+          }
+
+          <!-- Opcionales -->
+          @if (s.address != "") {
           <p><strong>Dirección:</strong> {{ s.address }}</p>
+          }
+
+          @if (s.city != "") {
           <p><strong>Ciudad:</strong> {{ s.city }}</p>
+          }
+
+          @if (s.province != "") {
           <p><strong>Provincia:</strong> {{ s.province }}</p>
-          <p><strong>Estado laboral:</strong> {{ s.employmentStatus }}</p>
-          <p><strong>Intereses:</strong> {{ s.interests?.join(', ') }}</p>
+          }
+
+          <!-- Fechas obligatorias -->
           <p><strong>Creado:</strong> {{ toShortDate(s.createdAt) }}</p>
+
           <p><strong>Actualizado:</strong> {{ toShortDate(s.updatedAt) }}</p>
+        </main>
 
-          <footer>
-            <button
-              matButton="tonal"
-              [routerLink]="['/student', s.id]"
-              (click)="editStudent(s)"
-            >
-              Editar
-            </button>
 
-            <button
-              matButton="filled"
-              (click)="confirmDelete(s)" class="error"
-            >
-              Eliminar
-            </button>
-          </footer>
-        </section>
+        <footer>
+          <button matButton="tonal" [routerLink]="['/student', s.id]" (click)="editStudent(s)">
+            Editar
+          </button>
+
+          <button matButton="filled" (click)="confirmDelete(s)" class="error">
+            Eliminar
+          </button>
+        </footer>
+      </section>
       }
     </td>
   </ng-container>

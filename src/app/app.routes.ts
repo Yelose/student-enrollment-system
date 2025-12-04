@@ -24,13 +24,6 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
-    path: 'course:id',
-    loadComponent: () =>
-      import('./features/pages/courses/course-detail/course-detail')
-        .then((m) => m.CourseDetail),
-    canActivate: [authGuard],
-  },
-  {
     path: 'enrollments',
     loadComponent: () =>
       import('./features/pages/enrollments/enrollments-list/enrollments-list')
@@ -42,13 +35,6 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/pages/students/students-list/students-list')
         .then((m) => m.StudentsList),
-    canActivate: [authGuard],
-  },
-  {
-    path: 'student:id',
-    loadComponent: () =>
-      import('./features/pages/students/student-detail/student-detail')
-        .then((m) => m.StudentDetail),
     canActivate: [authGuard],
   },
   {

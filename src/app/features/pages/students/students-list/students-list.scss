@@ -1,3 +1,8 @@
+:host{
+  display: flex;
+  flex-direction: column;
+  gap: 4dvh;
+}
 header {
   display: flex;
   flex-direction: column;
@@ -7,11 +12,28 @@ header {
       width: max(50%, 300px);
     }
     display: flex;
+    flex-direction: row-reverse;
     justify-content: space-between;
   }
 }
 
-
+.details{
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  main{
+    p{
+      strong{
+        color: var(--mat-sys-primary);
+      }
+    }
+  }
+  footer {
+    display: flex;
+    gap: 5px;
+    padding-bottom: 3dvh;
+  }
+}
 table {
     width: 100%;
   }
