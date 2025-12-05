@@ -153,3 +153,134 @@ Each document represents a single course with the following schema:
     - `CourseInterest` (`course-interest.type.ts`)
     - `COURSE_INTERESTS` (`course-interests.constant.ts`)
 
+
+---
+
+## 📝 Enrollment model & Firestore collection
+
+Enrollments represent the relationship between **one student** and **one course**, along with the current status of that assignment.
+They are stored in the Firestore collection:
+
+* **Collection name:** `dicampus-enrollments`
+
+Each document links a student to a course and stores denormalized information to improve listing performance and avoid unnecessary joins.
+
+### **Required fields**
+
+* `studentId: string`
+  Firebase document ID of the student.
+
+* `courseId: string`
+  Firebase document ID of the course.
+
+* `status: EnrollmentStatus`
+  Current state of the enrollment:
+
+  * `pending` – Enrollment created but not yet confirmed
+  * `in_progress` – Student is actively taking the course
+  * `completed` – Student finished the course
+  * `cancelled` – Enrollment was canceled
+
+### **Denormalized student data**
+
+Stored inside each enrollment for faster querying and display:
+
+* `studentName: string` – Combined name + surname
+* `studentEmail: string` – Used heavily for filtering and communication
+
+### **Denormalized course data**
+
+Also stored for performance and independence from course edits:
+
+* `courseName: string`
+* `courseCode: string`
+
+### **Date fields**
+
+Enrollments have their own date range, which may differ from the course’s official schedule:
+
+* `startDate: Date | null`
+* `endDate: Date | null`
+
+### **Audit fields**
+
+* `createdAt: Date | null`
+* `updatedAt?: Date | null`
+
+These values are automatically set and normalized through the `DateConvertionService` inside `EnrollmentsService`.
+
+---
+
+### **Type definition**
+
+The enrollment model is strongly typed through:
+
+* Interface:
+  **`EnrollmentInterface`**
+  `src/app/core/models/enrollment/enrollment-interface.ts`
+
+* Status type:
+  **`EnrollmentStatus`**
+  `enrollment-status.type.ts`
+
+* Status labels:
+  **`ENROLLMENT_STATUS_OPTIONS`**
+  `enrollment-status.constant.ts`
+
+---
+
+### 🔄 Enrollment workflow in the app
+
+1. **List view (`EnrollmentsList`)**
+
+   * Displays all enrollments with:
+
+     * Student info
+     * Course info
+     * Status badge
+     * Start/end dates
+   * Includes filters:
+
+     * Autocomplete by student
+     * Autocomplete by course
+     * Free-text search across all fields
+
+2. **Create / Edit form (`EnrollmentsForm`)**
+
+   * Uses autocompletes to pick a student and a course
+   * Denormalizes fields into the document automatically
+   * Supports editing through `selectedEnrollmentSignal`
+   * Prevents stale edit state by resetting signals when navigating to “New enrollment”
+
+3. **Firestore synchronization**
+
+   * All parsing and date normalization handled by:
+
+     * `DateConvertionService`
+     * `EnrollmentsService.stripUndefined()`
+     * `EnrollmentsService.prepForFirestore()`
+
+4. **Deletion**
+
+   * Always confirmed through `ConfirmDialogComponent`
+   * Automatically resets selection signals after removal
+
+---
+
+### 🧩 Why enrollments use denormalization
+
+Firestore does not support joins.
+To prevent repeated lookups into `students` and `courses`, each enrollment caches:
+
+* Student name
+* Student email
+* Course name
+* Course code
+
+This allows:
+
+* Fast listing
+* Lightweight filtering
+* Minimal Firestore reads
+* Stable UI even if a referenced student or course is later deleted
+
