@@ -1,1 +1,132 @@
-<p>enrollments-form works!</p>
+<main>
+    <form [formGroup]="enrollmentForm" (ngSubmit)="submit()">
+      <section>
+        <h2>Datos de la matrícula</h2>
+  
+        <div>
+          <!-- Estudiante -->
+          <mat-form-field appearance="outline">
+            <mat-label>Estudiante</mat-label>
+            <input
+              matInput
+              type="text"
+              [matAutocomplete]="studentAuto"
+              [value]="studentDisplay()"
+              (input)="onStudentInput($any($event.target).value)"
+              placeholder="Nombre o email..."
+            />
+  
+            <mat-autocomplete
+              #studentAuto="matAutocomplete"
+              (optionSelected)="onStudentSelected($any($event.option.value))"
+            >
+              @for (option of studentOptions(); track option.id) {
+                <mat-option [value]="option">
+                  {{ option.display }}
+                </mat-option>
+              }
+            </mat-autocomplete>
+  
+            @if (studentId?.invalid && (studentId?.dirty || studentId?.touched)) {
+              <mat-error>Debes seleccionar un estudiante.</mat-error>
+            }
+          </mat-form-field>
+  
+          <!-- Curso -->
+          <mat-form-field appearance="outline">
+            <mat-label>Curso</mat-label>
+            <input
+              matInput
+              type="text"
+              [matAutocomplete]="courseAuto"
+              [value]="courseDisplay()"
+              (input)="onCourseInput($any($event.target).value)"
+              placeholder="Nombre o código..."
+            />
+  
+            <mat-autocomplete
+              #courseAuto="matAutocomplete"
+              (optionSelected)="onCourseSelected($any($event.option.value))"
+            >
+              @for (option of courseOptions(); track option.id) {
+                <mat-option [value]="option">
+                  {{ option.display }}
+                </mat-option>
+              }
+            </mat-autocomplete>
+  
+            @if (courseId?.invalid && (courseId?.dirty || courseId?.touched)) {
+              <mat-error>Debes seleccionar un curso.</mat-error>
+            }
+          </mat-form-field>
+  
+          <!-- Estado de la matrícula -->
+          <mat-form-field appearance="outline">
+            <mat-label>Estado de la matrícula</mat-label>
+            <mat-select formControlName="status">
+              @for (status of statusOptions; track status.value) {
+                <mat-option [value]="status.value">
+                  {{ status.label }}
+                </mat-option>
+              }
+            </mat-select>
+  
+            @if (status?.invalid && (status?.dirty || status?.touched)) {
+              <mat-error>El estado de la matrícula es obligatorio.</mat-error>
+            }
+          </mat-form-field>
+        </div>
+      </section>
+  
+      <section>
+        <h2>Fechas de la matrícula</h2>
+  
+        <div>
+          <mat-form-field appearance="outline">
+            <mat-label>Fecha de inicio</mat-label>
+            <input
+              matInput
+              [matDatepicker]="startPicker"
+              formControlName="startDate"
+            />
+            <mat-datepicker-toggle matSuffix [for]="startPicker" />
+            <mat-datepicker #startPicker />
+  
+            @if (startDate?.invalid && (startDate?.dirty || startDate?.touched)) {
+              <mat-error>La fecha de inicio es obligatoria.</mat-error>
+            }
+          </mat-form-field>
+  
+          <mat-form-field appearance="outline">
+            <mat-label>Fecha de fin</mat-label>
+            <input
+              matInput
+              [matDatepicker]="endPicker"
+              formControlName="endDate"
+            />
+            <mat-datepicker-toggle matSuffix [for]="endPicker" />
+            <mat-datepicker #endPicker />
+  
+            @if (endDate?.invalid && (endDate?.dirty || endDate?.touched)) {
+              <mat-error>La fecha de fin es obligatoria.</mat-error>
+            }
+          </mat-form-field>
+        </div>
+      </section>
+  
+      <section>
+        <button
+          matButton="filled"
+          type="submit"
+          [disabled]="enrollmentForm.invalid"
+        >
+          @if (isEditMode()) {
+            Actualizar matrícula
+          } @else {
+            Guardar matrícula
+          }
+        </button>
+      </section>
+    </form>
+  </main>
+  

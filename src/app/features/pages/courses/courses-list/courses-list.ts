@@ -120,4 +120,9 @@ export class CoursesList {
     this.coursesService.setSelectedCourse(course);
     this.router.navigate(['/courses-form']);
   }
+
+  goToAddCourse(){
+    this.coursesService.setSelectedCourse(null)
+    this.router.navigate(["/courses-form"])
+  }
 }

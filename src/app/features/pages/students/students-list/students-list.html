@@ -8,7 +8,7 @@
         (input)="onFilterChange($any($event.target).value)" />
     </mat-form-field>
 
-    <button matButton="filled" routerLink="/students-form">Añadir Estudiante</button>
+    <button matButton="filled" (click)="goToAddStudent()">Añadir Estudiante</button>
   </div>
 
 </header>

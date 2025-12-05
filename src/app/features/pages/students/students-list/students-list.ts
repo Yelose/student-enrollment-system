@@ -124,4 +124,9 @@ export class StudentsList {
     this.router.navigate(['/students-form']); 
   }
 
+  goToAddStudent(){
+    this.studentService.setSelectedStudent(null)
+    this.router.navigate(["/students-form"])
+  }
+
 }

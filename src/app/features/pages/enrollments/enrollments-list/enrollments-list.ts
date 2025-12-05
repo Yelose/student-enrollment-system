@@ -27,7 +27,6 @@ import { DateConvertionService } from '../../../../shared/services/date-converti
   standalone: true,
   imports: [
     CommonModule,
-    RouterLink,
     MatTableModule,
     MatButtonModule,
     MatIconModule,
@@ -215,5 +214,9 @@ export class EnrollmentsList {
   editEnrollment(enrollment: EnrollmentInterface): void {
     this.enrollmentsService.setSelectedEnrollment(enrollment);
     this.router.navigate(['/enrollments-form']);
+  }
+  goToAddEnrollment(){
+    this.enrollmentsService.setSelectedEnrollment(null)
+    this.router.navigate(["/enrollments-form"])
   }
 }
